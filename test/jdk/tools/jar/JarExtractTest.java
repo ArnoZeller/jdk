@@ -69,7 +69,7 @@ public class JarExtractTest {
 
     @BeforeEach
     public void createTestJar() throws Exception {
-        final String tmpDir = Files.createTempDirectory("8173970-").toString();
+        final String tmpDir = Files.createTempDirectory(Path.of("."),"8173970-").toString();
         testJarPath = Path.of(tmpDir, "8173970-test.jar");
         final JarBuilder builder = new JarBuilder(testJarPath.toString());
         // d1
@@ -317,6 +317,8 @@ public class JarExtractTest {
         } finally {
             // clean up the file that might have been extracted into "/tmp/...." directory
             Files.deleteIfExists(Path.of(leadingSlashEntryName));
+            Files.deleteIfExists(tmpDir.resolve("foo"));
+            Files.deleteIfExists(tmpDir);
         }
     }
 

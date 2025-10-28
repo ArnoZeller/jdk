@@ -61,5 +61,7 @@ public class Main {
 
         // exercise the file type detector
         String fileType = Files.probeContentType(Path.of("."));
+        Files.deleteIfExists(foo);
+        Files.deleteIfExists(dir);
     }
 }
