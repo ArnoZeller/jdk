@@ -214,7 +214,7 @@ download-rpms:
         # Only run this if rpm dir is empty.
         ifeq ($(wildcard $(DOWNLOAD_RPMS)/*.rpm), )
 	  cd $(DOWNLOAD_RPMS) && \
-	      wget -r -np -nd $(patsubst %, -A "*%*.rpm", $(RPM_LIST)) $(BASE_URL)
+	      wget --execute=robots=off -r -np -nd $(patsubst %, -A "*%*.rpm", $(RPM_LIST)) $(BASE_URL)
         endif
 
 ################################################################################
