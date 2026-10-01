@@ -148,6 +148,11 @@ public class GetCanonicalPath {
         Runtime rt = Runtime.getRuntime();
         String share =
             "\\\\localhost\\" + cwd.charAt(0) + "$" + cwd.substring(2);
+
+        // Skip if admin share not reachable (firewall or policy restriction)
+        Assumptions.assumeTrue(Files.exists(Path.of(share)),
+            "Admin share " + share + " not accessible");
+
         String junctionName = "tmpDir";
         try {
             // create directory junction
