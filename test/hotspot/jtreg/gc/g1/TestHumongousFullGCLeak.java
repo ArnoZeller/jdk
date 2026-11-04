@@ -34,7 +34,7 @@ package gc.g1;
  * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
  * @run main/othervm -Xbootclasspath/a:. -XX:+UnlockDiagnosticVMOptions -Xmx64M -Xms64M -Xmn6M
  *                   -XX:MaxTenuringThreshold=0 -XX:+UseG1GC -XX:+WhiteBoxAPI -XX:NativeMemoryTracking=summary
- *                   -XX:G1HeapRegionSize=1M gc.g1.TestHumongousFullGCLeak
+ *                   -XX:G1HeapRegionSize=1M -Xlog:gc*=debug gc.g1.TestHumongousFullGCLeak
  */
 
 import jdk.test.lib.Asserts;
