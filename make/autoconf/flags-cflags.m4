@@ -724,6 +724,12 @@ AC_DEFUN([FLAGS_SETUP_CFLAGS_CPU_DEP],
     else
       AC_MSG_RESULT([no])
     fi
+
+    if test "x$FLAGS_OS" = xlinux && test "x$FLAGS_CPU" = xriscv64; then
+      # SA needs asynchronous unwind tables to unwind native frames. They are
+      # not enabled by default on riscv64 before GCC 13 and Clang 17.
+      $1_CFLAGS_CPU="${$1_CFLAGS_CPU} -fasynchronous-unwind-tables"
+    fi
   fi
 
   if test "x$TOOLCHAIN_TYPE" = xgcc; then
@@ -788,6 +794,17 @@ AC_DEFUN([FLAGS_SETUP_CFLAGS_CPU_DEP],
         # non-release builds.
         $1_CFLAGS_CPU_JVM="-homeparams"
       fi
+    elif test "x$FLAGS_CPU" = xaarch64; then
+      # MSVC ARM64 <= 19.44 (VS 2022) transforms zero-fill loops into memset()
+      # calls but synthesises the byte count with a 32-bit shift (lsl w,w,#3),
+      # truncating fills >= 4 GiB. /d2legacy-loopopt- disables that
+      # transformation. Fixed in MSVC 19.51 (VS 2026). The flag is omitted
+      # silently if a future compiler no longer accepts it.
+      FLAGS_COMPILER_CHECK_ARGUMENTS(ARGUMENT: [/d2legacy-loopopt-],
+          PREFIX: $3,
+          IF_TRUE: [
+              $1_CFLAGS_CPU_JVM="${$1_CFLAGS_CPU_JVM} /d2legacy-loopopt-"
+          ])
     fi
   fi
 
