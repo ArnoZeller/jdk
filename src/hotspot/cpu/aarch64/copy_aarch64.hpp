@@ -29,6 +29,19 @@
 #include OS_CPU_HEADER(copy)
 
 static void pd_fill_to_words(HeapWord* tohw, size_t count, juint value) {
+#ifdef _WINDOWS
+  // MSVC for Windows/AArch64 recognizes the store loop below as a memset() but
+  // synthesizes its byte length with a 32-bit shift (lsl w,w,#3), truncating
+  // the fill to (count * HeapWordSize) & 0xffffffff bytes. For objects larger
+  // than 4 GB (e.g. humongous arrays) this leaves most of the object
+  // uninitialized. Call memset() directly with a size_t length so the byte
+  // count is not re-derived (and truncated) by the optimizer. Only the
+  // zero-fill case is byte-fillable; non-zero patterns keep the word loop.
+  if (value == 0) {
+    memset(tohw, 0, count * HeapWordSize);
+    return;
+  }
+#endif
   julong* to = (julong*) tohw;
   julong  v  = ((julong) value << 32) | value;
   while (count-- > 0) {
